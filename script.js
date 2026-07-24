@@ -3,20 +3,18 @@
 
     // =========================================================================
     // КОНФИГУРАЦИЯ СЕРВЕРНОЙ ФУНКЦИИ (PROXY)
-    // Укажите URL вашей Yandex Cloud Function или API-прокси.
-    // На сервере должен храниться ваш приватный VK_TOKEN.
     // =========================================================================
-    const PROXY_API_URL = 'https://functions.yandexcloud.net/d4e0ch13vto80l0b9vhr'; // Замените на ваш URL
+    const PROXY_API_URL = 'https://functions.yandexcloud.net/d4e0ch13vto80l0b9vhr';
 
     // ---------- Генерация звёздочек ----------
     function createStars() {
         document.querySelectorAll('.star').forEach(el => el.remove());
-        const count = Math.floor(Math.random() * 100) + 50;
+        const count = Math.floor(Math.random() * 80) + 40;
         for (let i = 0; i < count; i++) {
             const star = document.createElement('span');
             star.className = 'star';
             star.textContent = '✦';
-            const size = Math.random() * 20 + 10;
+            const size = Math.random() * 18 + 10;
             star.style.fontSize = size + 'px';
             star.style.left = Math.random() * 95 + '%';
             star.style.top = Math.random() * 100 + '%';
@@ -55,10 +53,12 @@
         });
     }
 
-    function handleNavClick() {
+    function handleNavClick(e) {
+        e.preventDefault();
         const targetId = this.dataset.target;
         const el = document.getElementById(targetId);
         if (el) {
+            // Плавный скролл к верхней карточке этого года
             el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }
@@ -66,16 +66,19 @@
     function updateCrossbar() {
         const scrollTop = window.scrollY;
         const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const progress = docHeight ? Math.round((scrollTop / docHeight) * 100) : 0;
+        const progress = docHeight > 0 ? Math.round((scrollTop / docHeight) * 100) : 0;
         if (progressBar) {
             progressBar.style.width = progress + '%';
         }
 
-        const sections = document.querySelectorAll('.block[id]');
+        const sections = document.querySelectorAll('.block[id], .event-card[id], .doc-block[id]');
         let activeId = null;
         sections.forEach(sec => {
             const rect = sec.getBoundingClientRect();
-            if (rect.top <= 100) activeId = sec.id;
+            // Порог срабатывания подсветки кросс-бара
+            if (rect.top <= 200 && rect.bottom >= 100) {
+                activeId = sec.id;
+            }
         });
         if (activeId) {
             navItems.forEach(item => {
@@ -164,20 +167,19 @@
         document.body.removeChild(textarea);
     }
 
-    // ---------- Проверка локального запуска ----------
     function isLocal() {
         return window.location.protocol === 'file:';
     }
 
-    // ---------- НОВОСТИ (VK через Бэкенд / Yandex Cloud) ----------
+    // ---------- НОВОСТИ (VK через Proxy) ----------
     let loadedVkPosts = [];
 
     async function loadNews() {
-        const newsContainer = document.getElementById('newsContainer') || document.querySelector('.news-grid');
+        const newsContainer = document.getElementById('newsContainer') || document.getElementById('newsGrid');
         if (!newsContainer) return;
 
         if (isLocal()) {
-            newsContainer.innerHTML = '<p style="text-align:center; color:#aaa;">Запуск из файла. Для работы новостей запушьте сайт на хостинг.</p>';
+            newsContainer.innerHTML = '<p style="text-align:center; color:#aaa;">Запуск из файла. Для работы новостей запустите веб-сервер.</p>';
             return;
         }
 
@@ -410,7 +412,7 @@
                 return;
             }
             const maxLogoHeight = partnerList.reduce((max, p) => Math.max(max, p.size), 80);
-            const containerHeight = maxLogoHeight + 200;
+            const containerHeight = maxLogoHeight + 120;
             const wrapper = track.closest('.partners-wrapper') || track;
             wrapper.style.height = `${containerHeight}px`;
             track.innerHTML = '';
@@ -490,19 +492,28 @@
         }
     }
 
-    // ---------- ПРОЕКТЫ ----------
+    // ---------- ПРОЕКТЫ С СОРТИРОВКОЙ ПО ДАТЕ ----------
+    function sortProjectsByDate(projects) {
+        return projects.sort((a, b) => {
+            const dateA = a['Дата начала'] ? new Date(a['Дата начала']) : new Date(0);
+            const dateB = b['Дата начала'] ? new Date(b['Дата начала']) : new Date(0);
+            return dateB - dateA; // Свежие проекты первыми
+        });
+    }
+
     async function loadProjects() {
         const hotContainer = document.getElementById('projectsHot');
         const gridContainer = document.getElementById('projectsGrid');
         if (!hotContainer && !gridContainer) return;
 
         if (isLocal()) {
-            const demoProjects = [
-                { Название: 'Робот-манипулятор', Описание: 'Разработка промышленного робота', 'Полное описание': 'Подробное описание проекта...', Пометки: 'Открытый, Грант', Ссылки: 'https://github.com', Фото: 'project_robot.jpg', Сжатое: 'project_robot_comp.jpg', 'Дата начала': '2025-01-01', 'Дата закрытия': '2025-06-01' },
-                { Название: 'Спутник-кубсат', Описание: 'Создание малого космического аппарата', 'Полное описание': 'Проект по разработке спутника формата 3U.', Пометки: 'Открытая разработка', Ссылки: 'https://space.ru', Фото: 'sat.jpg', Сжатое: 'sat_comp.jpg', 'Дата начала': '2024-09-01' }
+            let demoProjects = [
+                { Название: 'Робот-манипулятор', Описание: 'Разработка промышленного робота', 'Полное описание': 'Подробное описание проекта...', Пометки: 'Открытый, Грантовый', Ссылки: 'https://github.com', Фото: 'project_robot.jpg', Сжатое: 'project_robot_comp.jpg', 'Дата начала': '2026-01-01', 'Дата закрытия': '2026-06-01' },
+                { Название: 'Спутник-кубсат', Описание: 'Создание малого космического аппарата', 'Полное описание': 'Проект по разработке спутника формата 3U.', Пометки: 'Открытая разработка', Ссылки: 'https://space.ru', Фото: 'sat.jpg', Сжатое: 'sat_comp.jpg', 'Дата начала': '2025-09-01' }
             ];
+            
+            demoProjects = sortProjectsByDate(demoProjects);
             const openProjects = demoProjects.filter(p => p.Пометки && p.Пометки.includes('Открытый'));
-            const allProjects = demoProjects;
 
             function renderDemoCard(p, isHot = false) {
                 const tags = (p.Пометки || '').split(',').map(s => s.trim()).filter(Boolean);
@@ -524,7 +535,7 @@
                     <div class="project-card" data-full='${encodeURIComponent(JSON.stringify(p))}'>
                         <div class="project-body">
                             <h3>${p.Название || 'Проект'}</h3>
-                            <p>${isHot ? fullDesc : shortDesc}</p>
+                            <p class="project-desc">${isHot ? fullDesc : shortDesc}</p>
                             <div class="project-tags">${tagHtml}</div>
                         </div>
                     </div>
@@ -532,7 +543,7 @@
             }
 
             if (hotContainer) hotContainer.innerHTML = openProjects.map(p => renderDemoCard(p, true)).join('');
-            if (gridContainer) gridContainer.innerHTML = allProjects.map(p => renderDemoCard(p, false)).join('');
+            if (gridContainer) gridContainer.innerHTML = demoProjects.map(p => renderDemoCard(p, false)).join('');
 
             document.querySelectorAll('.project-card').forEach(card => {
                 card.addEventListener('click', function() {
@@ -548,7 +559,7 @@
             if (!resp.ok) throw new Error('project.txt not found');
             const text = await resp.text();
             const blocks = text.split(/\n\s*\n/).filter(b => b.trim());
-            const projects = blocks.map(block => {
+            let projects = blocks.map(block => {
                 const lines = block.split('\n');
                 const obj = {};
                 lines.forEach(line => {
@@ -561,6 +572,10 @@
                 });
                 return obj;
             });
+
+            // Сортировка проектов по дате начала (свежие сверху)
+            projects = sortProjectsByDate(projects);
+
             const openProjects = projects.filter(p => p.Пометки && p.Пометки.includes('Открытый'));
             const allProjects = projects;
 
@@ -665,7 +680,7 @@
         }
     };
 
-    // ---------- ГАЛЕРЕЯ / СОБЫТИЯ ----------
+    // ---------- ГАЛЕРЕЯ / СОБЫТИЯ С ЧЁТКИМ ПЕРЕМЕЩЕНИЕМ ПО ГОДАМ ----------
     async function loadGallery() {
         const container = document.getElementById('galleryEvents');
         if (!container) return;
@@ -674,7 +689,7 @@
 
         if (isLocal()) {
             container.innerHTML = `
-                <div class="event-card">
+                <div class="event-card" id="year-2026" style="scroll-margin-top: 100px;">
                     <div class="event-card-header">
                         <h3>Демо-событие (локальный запуск)</h3>
                         <span class="event-card-date">2026-07-23</span>
@@ -684,7 +699,6 @@
             return;
         }
 
-        // ---- РАСПОЗНАВАНИЕ ВИДЕО ПО ССЫЛКАМ ----
         function getEmbedUrl(url) {
             let match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/);
             if (match) return { embed: `https://www.youtube.com/embed/${match[1]}`, platform: 'youtube' };
@@ -731,6 +745,7 @@
                 }
             }
 
+            // Сортировка событий по дате (от новых к старым)
             events.sort((a, b) => new Date(b.Дата) - new Date(a.Дата));
 
             if (events.length === 0) {
@@ -740,16 +755,42 @@
 
             container.innerHTML = '';
 
+            // Получаем список унікальных лет по порядку
+            const yearsSet = new Set();
+            events.forEach(ev => {
+                const year = ev.Дата.split('-')[0];
+                if (year) yearsSet.add(year);
+            });
+
+            // Генерация кнопок кросс-бара по годам
+            const crossbarNav = document.getElementById('crossbarNav');
+            if (crossbarNav && yearsSet.size > 0) {
+                crossbarNav.innerHTML = Array.from(yearsSet).map(year => 
+                    `<span class="nav-item" data-target="year-${year}">${year}</span>`
+                ).join('');
+                initCrossbarNav();
+            }
+
+            const yearAnchorsAdded = new Set();
+
             for (const ev of events) {
                 const albumId = ev.Альбом;
                 const title = ev.Название;
                 const date = ev.Дата;
                 const description = ev.Описание;
+                const year = date.split('-')[0];
 
                 const card = document.createElement('div');
                 card.className = 'event-card';
                 card.dataset.date = date;
-                
+                card.style.scrollMarginTop = '100px'; // Отступ при прокрутке, чтобы карточка не пряталась под шапку
+
+                // Привязываем ID года к самой первой (верхней) карточке этого года
+                if (year && !yearAnchorsAdded.has(year)) {
+                    card.id = `year-${year}`;
+                    yearAnchorsAdded.add(year);
+                }
+
                 const header = document.createElement('div');
                 header.className = 'event-card-header';
                 header.innerHTML = `<h3>${title}</h3><span class="event-card-date">${date}</span>`;
@@ -788,7 +829,6 @@
                     }
                 }
 
-                // Загружаем фото из VK через функцию бэкенда
                 if (albumId && albumId !== 'none' && albumId !== 'wall') {
                     try {
                         const pResp = await fetch(`${PROXY_API_URL}?action=photos&album_id=${albumId}`);
@@ -855,23 +895,15 @@
                     } else if (item.type === 'video') {
                         const div = document.createElement('div');
                         div.className = 'video-item';
-                        div.style.background = '#1a1a2e';
-                        div.style.display = 'flex';
-                        div.style.alignItems = 'center';
-                        div.style.justifyContent = 'center';
-                        div.style.position = 'relative';
 
                         const icon = document.createElement('span');
                         icon.className = 'play-icon';
                         icon.textContent = '▶';
-                        icon.style.fontSize = '48px';
-                        icon.style.color = 'rgba(255,255,255,0.8)';
                         div.appendChild(icon);
 
                         const badge = document.createElement('div');
                         badge.className = 'video-badge';
                         badge.textContent = '🎬 Видео';
-                        badge.style.cssText = 'position:absolute; bottom:8px; right:8px; background:rgba(0,0,0,0.7); color:#fff; padding:3px 10px; border-radius:4px; font-size:12px; pointer-events:none;';
                         div.appendChild(badge);
 
                         div.addEventListener('click', function(e) {
@@ -900,6 +932,8 @@
                     });
                 });
             }
+
+            updateCrossbar();
 
         } catch (error) {
             console.error('Ошибка загрузки галереи:', error);
@@ -987,7 +1021,7 @@
 
         if (isLocal()) {
             container.innerHTML = `
-                <div class="doc-block" id="block-achiv">
+                <div class="doc-block" id="block-achiv" style="scroll-margin-top: 100px;">
                     <h3>Достижения</h3>
                     <div class="doc-list">
                         <div class="doc-item"><a href="#">Демо-документ 1</a></div>
@@ -1028,7 +1062,7 @@
                     const nb = parseInt(b.split('_')[1]) || 0;
                     return na - nb;
                 });
-                html += `<div class="doc-block" id="block-${key}">
+                html += `<div class="doc-block" id="block-${key}" style="scroll-margin-top: 100px;">
                     <h3>${group.label}</h3>
                     <div class="doc-list">
                         ${sorted.map(f => `
