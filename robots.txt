@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://buran-skb.tech/sitemap.xml
