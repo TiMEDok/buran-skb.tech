@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>СКБ «Буран» — Студенческое конструкторское бюро</title>
+    <meta name="description" content="Студенческое конструкторское бюро «Буран» — сообщество инженеров, где студенты и школьники создают технологии будущего. Присоединяйся к нам!">
+    <meta property="og:title" content="СКБ «Буран» — Студенческое конструкторское бюро">
+    <meta property="og:description" content="Студенческое конструкторское бюро «Буран» — сообщество инженеров, где студенты и школьники создают технологии будущего.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://skbburan.ru">
+    <meta property="og:image" content="https://skbburan.ru/logo/skbbyranlogocomp.png">
+    <link rel="icon" href="logo/skbbyranlogocomp.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ===== МЕНЮ ===== -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+    <nav class="main-menu" id="mainMenu" role="navigation" aria-label="Основное меню">
+        <button class="menu-close" id="menuClose" aria-label="Закрыть меню">✕</button>
+        <ul>
+            <li><a href="home.html" class="active">Главная</a></li>
+            <li><a href="project.html">Проекты</a></li>
+            <li><a href="photogallery.html">Фотогалерея</a></li>
+            <li><a href="document.html">Документы</a></li>
+        </ul>
+    </nav>
+
+<!-- ===== КРОСС-БАР (с кликабельной надписью) ===== -->
+<header class="crossbar" id="crossbar" role="banner">
+    <div class="crossbar-inner">
+        <button class="hamburger" id="hamburger" aria-label="Открыть меню">
+            <span></span><span></span><span></span>
+        </button>
+        <a href="home.html" class="crossbar-title">СКБ "Буран"</a>
+        <div class="crossbar-nav" id="crossbarNav">
+            <span class="nav-item" data-target="section-0">Цель</span>
+            <span class="nav-item" data-target="section-1">Заявка</span>
+            <span class="nav-item" data-target="section-2">История</span>
+            <span class="nav-item" data-target="section-3">Новости</span>
+            <span class="nav-item" data-target="section-4">Направления</span>
+            <span class="nav-item" data-target="section-5">Партнёры</span>
+            <span class="nav-item" data-target="section-6">Выгода</span>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="crossbarProgressBar"></div>
+        </div>
+    </div>
+</header>
+
+<!-- Блок 0: Цель (с логотипом без подложки) -->
+<section class="block section-hero first-block" id="section-0" data-animate>
+    <div class="block-inner">
+        <div class="hero-grid">
+            <div class="hero-text">
+                <h1>Цель СКБ «Буран»</h1>
+                <p>Мы предлагаем студентам всех направлений и школьникам доступ к оборудованию, поддержку опытных наставников и возможность работать над реальными проектами. Здесь вы сможете раскрыть свой потенциал, приобрести уникальные навыки и присоединиться к команде, которая создает технологии будущего уже сегодня.</p>
+                <p class="hero-highlight">Стань частью сообщества, где инженерная мысль не знает границ!</p>
+            </div>
+            <div class="hero-image">
+                <img src="logo/skbbyranlogocomp.png" data-src="logo/skbbyranlogo.svg" alt="Логотип СКБ Буран" class="lazy-logo logo-hero">
+            </div>
+        </div>
+    </div>
+</section>
+
+        <!-- Блок 1: Заявка -->
+        <section class="block section-apply" id="section-1" data-animate>
+            <div class="block-inner">
+                <h2>Заявка на вступление</h2>
+                <p class="apply-text">Если ты хочешь стать частью СКБ «Буран» — подавай заявку прямо сейчас! Мы ждём активных, талантливых и целеустремлённых.</p>
+                <a href="https://forms.yandex.ru" target="_blank" rel="noopener" class="btn-primary">Подать заявку</a>
+            </div>
+        </section>
+
+        <!-- Блок 2: История -->
+        <section class="block section-history" id="section-2" data-animate>
+            <div class="block-inner">
+                <h2>История</h2>
+                <div class="history-grid">
+                    <div class="history-image">
+                        <img src="img/historyburancomp.png" data-src="img/historyburan.png" alt="Взлёт Бурана" class="lazy-img">
+                    </div>
+                    <div class="history-text">
+                        <p>На кафедре РТиРС сформировалась очень дружная и увлеченная команда – студенческое конструкторское бюро «Буран». Его активисты – это не только студенты, но и школьники.</p>
+                        <p>Примером для них являются исторические достижения кафедры. В 1970-х – 1990-х гг. кафедра радиотехники и радиосистем ВлГУ вела научные исследования по повышению эффективности радиосистем ближней навигации и посадки самолетов. Была разработана имитационная модель системы посадки космического корабля многоразового использования «Буран».</p>
+                    </div>
+                </div>
+                <div class="rocket-animation" aria-hidden="true">
+                    <div class="rocket"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Блок 3: Новости -->
+        <section class="block section-news" id="section-3" data-animate>
+            <div class="block-inner">
+                <h2>Новости</h2>
+                <div class="news-grid" id="newsGrid">
+                    <div class="news-loader">Загрузка новостей...</div>
+                </div>
+            </div>
+        </section>
+
+<!-- Блок 4: Направления (с описаниями) -->
+<section class="block section-directions" id="section-4" data-animate>
+    <div class="block-inner">
+        <h2>Направления</h2>
+        <div class="directions-grid">
+            <div class="direction-card">
+                <div class="direction-icon">🤖</div>
+                <h3>Робототехника</h3>
+                <p class="direction-desc">Создание и программирование роботов для различных задач.</p>
+            </div>
+            <div class="direction-card">
+                <div class="direction-icon icon-rocket">🚀</div>
+                <h3>Ракетомоделирование</h3>
+                <p class="direction-desc">Проектирование и запуск моделей ракет, аэродинамика.</p>
+            </div>
+            <div class="direction-card">
+                <div class="direction-icon">🖥️</div>
+                <h3>Электроника</h3>
+                <p class="direction-desc">Разработка схем, микроконтроллеров и встраиваемых систем.</p>
+            </div>
+            <div class="direction-card">
+                <div class="direction-icon">📡</div>
+                <h3>Радиосвязь</h3>
+                <p class="direction-desc">Передача данных, антенные системы и радиотехника.</p>
+            </div>
+            <div class="direction-card">
+                <div class="direction-icon icon-drone">🛸</div>
+                <h3>Дрон-системы</h3>
+                <p class="direction-desc">Разработка и управление беспилотными летательными аппаратами.</p>
+            </div>
+            <div class="direction-card">
+                <div class="direction-icon icon-ai">🧠</div>
+                <h3>Искусственный интеллект</h3>
+                <p class="direction-desc">Машинное обучение, нейросети и компьютерное зрение.</p>
+            </div>
+            <div class="direction-card direction-custom">
+                <div class="direction-icon">✨</div>
+                <h3>Создай своё направление</h3>
+                <p class="direction-desc">Предложи свою идею и стань лидером нового направления.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+        <!-- Блок 5: Партнёры -->
+        <section class="block section-partners" id="section-5" data-animate>
+            <div class="block-inner">
+                <h2>Партнёры</h2>
+                <div class="partners-wrapper">
+    		   <div class="partners-track" id="partnersTrack"></div>
+		</div>
+            </div>
+        </section>
+
+        <!-- Блок 6: Выгода -->
+        <section class="block section-benefits" id="section-6" data-animate>
+            <div class="block-inner">
+                <h2>Почему стоит заниматься инженерией?</h2>
+                <div class="benefits-flowchart">
+                    <div class="flow-step"><span class="step-num">1</span><p>Реальные проекты</p></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step"><span class="step-num">2</span><p>Наставники</p></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step"><span class="step-num">3</span><p>Навыки</p></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step"><span class="step-num">4</span><p>Карьера</p></div>
+                </div>
+                <div class="benefits-text">
+                    <p>Инженерные компетенции открывают двери в будущее. Ты научишься работать в команде, решать сложные задачи, создавать продукты с нуля и видеть результат своих усилий.</p>
+                    <p>СКБ «Буран» — это стартовая площадка для твоего профессионального роста.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ===== ФУТЕР ===== -->
+<footer class="footer" id="contacts" role="contentinfo">
+    <div class="footer-inner">
+        <div class="footer-col footer-left">
+            <div class="footer-logo">
+                <a href="https://www.vlsu.ru/" target="_blank" rel="noopener">
+                    <img src="logo/vlsulogocomp.png" data-src="logo/vlsulogo.svg" alt="ВлГУ" class="lazy-logo" width="100" height="100">
+                </a>
+                <span>Владимирский государственный университет</span>
+            </div>
+            <p class="footer-address">600000, г. Владимир, ул. Горького, 87</p>
+                </div>
+        <div class="footer-col footer-center"></div>
+        <div class="footer-col footer-right">
+            <h4>Контакты</h4>
+            <p><a href="#" id="copyEmail">aero@buran-skb.tech</a></p>
+            <p><a href="https://vk.com/skbburan" target="_blank" rel="noopener">ВКонтакте</a></p>
+            <p>ВлГУ, корпус №3, ауд. 432-432а</p>
+        </div>
+    </div>
+    <div class="footer-copy-wrapper">
+        <p class="footer-copy">© 2026 СКБ «Буран»</p>
+    </div>
+</footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

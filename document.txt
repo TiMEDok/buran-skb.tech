@@ -1,0 +1,8 @@
+achiv_01_грамота.pdf
+achiv_02_диплом.pdf
+rules_01_положение.docx
+sovet_01_состав.pdf
+contr_01_договор.pdf
+artic_01_статья.pdf
+draw_02_1чертеж.pdf
+draw_01_2чертеж.dwg

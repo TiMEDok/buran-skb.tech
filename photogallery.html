@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Фотогалерея — СКБ «Буран»</title>
+    <meta name="description" content="Фотографии с мероприятий СКБ «Буран». Скачивайте и смотрите события.">
+    <meta property="og:title" content="Фотогалерея СКБ «Буран»">
+    <meta property="og:description" content="Фотографии с мероприятий нашего бюро.">
+    <link rel="icon" href="logo/skbbyranlogocomp.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Меню -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+    <nav class="main-menu" id="mainMenu" role="navigation" aria-label="Основное меню">
+        <button class="menu-close" id="menuClose" aria-label="Закрыть меню">✕</button>
+        <ul>
+            <li><a href="home.html">Главная</a></li>
+            <li><a href="project.html">Проекты</a></li>
+            <li><a href="photogallery.html" class="active">Фотогалерея</a></li>
+            <li><a href="document.html">Документы</a></li>
+        </ul>
+    </nav>
+
+    <!-- Кросс-бар (годы заполняются динамически) -->
+    <header class="crossbar" id="crossbar" role="banner">
+        <div class="crossbar-inner">
+            <button class="hamburger" id="hamburger" aria-label="Открыть меню">
+                <span></span><span></span><span></span>
+            </button>
+            <a href="home.html" class="crossbar-title">СКБ "Буран"</a>
+            <div class="crossbar-nav" id="crossbarNav"></div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="crossbarProgressBar"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main id="mainContent">
+        <section class="block first-block" id="section-gallery" data-animate>
+            <div class="block-inner">
+                <h2>Фотогалерея</h2>
+                <div class="gallery-search">
+                    <input type="text" id="gallerySearch" placeholder="Поиск по дате (ГГГГ-ММ-ДД)">
+                </div>
+                <div class="gallery-events" id="galleryEvents">
+                    <div class="loader">Загрузка событий...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Футер -->
+    <footer class="footer" id="contacts" role="contentinfo">
+        <div class="footer-inner">
+            <div class="footer-col footer-left">
+                <div class="footer-logo">
+                    <a href="https://www.vlsu.ru/" target="_blank" rel="noopener">
+                        <img src="logo/vlsulogocomp.png" data-src="logo/vlsulogo.svg" alt="ВлГУ" class="lazy-logo" width="100" height="100">
+                    </a>
+                    <span>Владимирский государственный университет</span>
+                </div>
+                <p class="footer-address">600000, г. Владимир, ул. Горького, 87</p>
+            </div>
+            <div class="footer-col footer-center"></div>
+            <div class="footer-col footer-right">
+                <h4>Контакты</h4>
+                <p><a href="#" id="copyEmail">aero@buran-skb.tech</a></p>
+                <p><a href="https://vk.com/skbburan" target="_blank" rel="noopener">ВКонтакте</a></p>
+                <p>ВлГУ, корпус №3, ауд. 432-432а</p>
+            </div>
+        </div>
+        <div class="footer-copy-wrapper">
+            <p class="footer-copy">© 2026 СКБ «Буран»</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

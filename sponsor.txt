@@ -1,0 +1,5 @@
+apelsin.png, apelsin.png, 200, https://vk.ru/app_33
+may.png, may.png, 50, https://vk.ru/mestoyasnogouma
+vlsulogo.svg, vlsulogocomp.png, 140, https://www.vlsu.ru/
+vish.svg, vish.svg, 180, https://aesa.tech/
+rtrs.png, rtrs.png, 80, https://rtrs.vlsu.ru/
