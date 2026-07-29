@@ -973,11 +973,11 @@ async function loadProjects() {
 
                     // 1. Находим изображение низкого качества (превью для плитки галереи)
                     // Маленькие размеры в VK API: 'm', 's', 'p', 'q', или берем первый элемент
-                    const lowQuality = sizes.find(s => s.type === 'x' || s.type === 'z') || sizes[0];
+                    const lowQuality = sizes.find(s => s.type === 'r' || s.type === 'x') || sizes[0];
 
                     // 2. Находим изображение высокого качества (для модального окна и скачивания)
                     // Самые высокие разрешения в VK: 'w', 'z', 'y', 'x' или максимальное по ширине
-                    const highQuality = sizes.find(s => s.type === 'w' || s.type === 'z' || s.type === 'y') 
+                    const highQuality = sizes.find(s => s.type === 'y' || s.type === 'z' || s.type === 'w') 
                                         || sizes.reduce((a, b) => (a.width > b.width ? a : b), sizes[0]);
 
                     const item = document.createElement('div');
