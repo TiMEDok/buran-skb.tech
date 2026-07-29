@@ -596,32 +596,83 @@ p, li, .text { font-size: 24px; margin-bottom: 1.5em; }
     100% { left: 0; transform: translateX(-100%); }
 }
 
-/* ===== Выгода ===== */
+/* ===== Блок-схема (Выгода) ===== */
 .benefits-flowchart {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: center;
     align-items: center;
-    gap: 20px 40px;
-    margin: 40px 0;
+    gap: 12px;
+    margin: 40px auto;
+    width: 100%;
+    max-width: 1100px;
+    box-sizing: border-box;
 }
+
 .flow-step {
     background: var(--blue);
     color: #fff;
-    padding: 20px 30px;
-    border-radius: 40px;
+    padding: 16px 20px;
+    border-radius: 20px;
     text-align: center;
-    min-width: 140px;
+    flex: 1 1 0; /* Все карточки одинаковой ширины */
+    min-width: 0; /* Предотвращает вылезание текста */
     box-shadow: var(--shadow);
 }
+
 .step-num {
     display: block;
-    font-size: 32px;
+    font-size: 26px;
     font-weight: bold;
+    margin-bottom: 4px;
 }
+
+.flow-step p {
+    font-size: 14px;
+    line-height: 1.3;
+    margin: 0;
+}
+
 .flow-arrow {
-    font-size: 36px;
+    font-size: 24px;
     color: var(--orange);
+    line-height: 1;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== Адаптация для экранов до 1024px (Планшеты и мобильные) ===== */
+@media (max-width: 1024px) {
+    .benefits-flowchart {
+        flex-direction: column; /* Элементы выстраиваются строго в столбик */
+        align-items: center;
+        gap: 10px;
+        max-width: 360px; /* Фиксированная комфортная ширина контейнера */
+    }
+
+    .flow-step {
+        width: 75%;
+        flex: none; /* Отменяем гибкость Flex */
+        padding: 20px 20px;
+        border-radius: 16px;
+    }
+
+    .step-num {
+        font-size: 24px;
+    }
+
+    .flow-step p {
+        font-size: 24px;
+    }
+
+    /* ВСЕ стрелки на экранах <= 1024px поворачиваются вниз */
+    .flow-arrow {
+        transform: rotate(90deg);
+        font-size: 28px;
+        margin: 2px 0;
+    }
 }
 .benefits-text {
     max-width: 800px;
@@ -639,47 +690,66 @@ p, li, .text { font-size: 24px; margin-bottom: 1.5em; }
     overflow: hidden;
 }
 .footer-inner {
-    max-width: 900px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 30px;
     align-items: start;
 }
 .footer-col {
     display: flex;
     flex-direction: column;
 }
+/* ВлГУ — Слева, выравнивание по правому краю */
 .footer-left {
     align-items: flex-end;
     text-align: right;
 }
+.footer-left .footer-logo {
+    flex-direction: row-reverse;
+}
+
+/* СКБ "Буран" — В центре, выравнивание по центру */
+.footer-center {
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+.footer-center .footer-logo {
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* РТиРС — Справа, зеркально ВлГУ, выравнивание по левому краю */
 .footer-right {
     align-items: flex-start;
     text-align: left;
 }
-.footer-center { display: none; }
+.footer-right .footer-logo {
+    flex-direction: row;
+}
+
+/* Общие стили логотипов и текста футера */
 .footer-logo {
     display: flex;
     align-items: center;
     gap: 12px;
+    margin-bottom: 10px;
 }
 .footer-logo img {
-    width: 100px;
-    height: 100px;
+    width: 140px;
+    height: 140px;
     object-fit: contain;
 }
 .footer-logo span {
     font-size: 18px;
+    line-height: 1.3;
 }
 .footer-address {
     font-size: 16px;
     margin-top: 4px;
-}
-.footer-col h4 {
-    font-size: 20px;
-    margin-bottom: 6px;
 }
 .footer-col p {
     font-size: 18px;
@@ -695,12 +765,83 @@ p, li, .text { font-size: 24px; margin-bottom: 1.5em; }
     padding: 12px 0;
     border-top: 1px solid rgba(255,255,255,0.2);
     text-align: center;
-    margin: 16px 0 0;
+    margin: 20px 0 0;
 }
 .footer-copy {
     font-size: 16px;
     margin: 0 !important;
     padding: 0 20px;
+}
+.skb-logo {
+  transform: scale(1.4); /* Увеличивает логотип на 30% */
+  transform-origin: center; /* Точка привязки роста (по центру, слева или справа) */
+}
+/* ===== Адаптивность футера для планшетов и мобильных устройств ===== */
+@media (max-width: 992px) {
+    .footer-inner {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    .footer-left, .footer-center, .footer-right {
+        align-items: center;
+        text-align: center;
+    }
+    .footer-left .footer-logo, 
+    .footer-right .footer-logo {
+        flex-direction: column;
+    }
+}
+/* ===== Полное исправление отображения футера ===== */
+
+/* 1. Стили для десктопов (компьютеров): ставим СКБ Буран строго по центру */
+@media (min-width: 993px) {
+    .footer-inner {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr 1fr !important;
+    }
+    .footer-left {
+        order: 1 !important;
+        align-items: flex-end !important;
+        text-align: right !important;
+    }
+    .footer-center {
+        order: 2 !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+    .footer-right {
+        order: 3 !important;
+        align-items: flex-start !important;
+        text-align: left !important;
+    }
+}
+
+/* 2. Стили для планшетов и мобильных устройств: СКБ Буран сверху, текст под логотипами */
+@media (max-width: 992px) {
+    .footer-inner {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 30px !important;
+    }
+    .footer-center {
+        order: 1 !important;
+    }
+    .footer-left {
+        order: 2 !important;
+    }
+    .footer-right {
+        order: 3 !important;
+    }
+    .footer-col {
+        align-items: center !important;
+        text-align: center !important;
+        width: 100% !important;
+    }
+    .footer-logo {
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
 }
 
 /* ===== Всплывающее окно (модалка) ===== */
@@ -796,7 +937,11 @@ p, li, .text { font-size: 24px; margin-bottom: 1.5em; }
     color: #ffffff !important;
     transform: translateY(-2px);
 }
-
+.news-modal-img-wrapper img.placeholder-img {
+    object-fit: contain !important;
+    padding: 15px;
+    box-sizing: border-box;
+}
 /* ===== Универсальный фикс горизонтального скролла ===== */
 * { max-width: 100%; box-sizing: border-box; }
 img, video, iframe, canvas, svg { max-width: 100%; height: auto; }
@@ -869,7 +1014,35 @@ img, video, iframe, canvas, svg { max-width: 100%; height: auto; }
     gap: 8px;
     margin-top: 10px;
 }
+/* Общие стили для превью карточки проекта */
+.project-card .lazy-img {
+    width: 100%;
+    height: 200px; /* Укажите нужную вам высоту блока картинки */
+    object-fit: cover; /* Для обычных фото — красивое заполнение */
+    display: block;
+    background-color: #f5f5f5; /* Цвет фона под картинкой (если надо) */
+}
 
+/* Стили специально для картинки-заглушки/логотипа */
+.project-card .lazy-img.placeholder-img {
+    object-fit: contain; /* Картинка уменьшается и вмещается полностью */
+    padding: 15px;      /* Отступ внутри карточки, чтобы логотип не лип к краям */
+    box-sizing: border-box;
+}
+
+/* Стили для картинки внутри модального окна */
+.modal-body img {
+    max-width: 100%;
+    max-height: 400px;
+    display: block;
+    margin: 0 auto 15px auto;
+    object-fit: cover;
+}
+
+.modal-body img.placeholder-img {
+    object-fit: contain;
+    padding: 20px;
+}
 /* ===== Теги проектов (с рамками и иконками) ===== */
 .tag {
     display: inline-block;
@@ -926,8 +1099,9 @@ img, video, iframe, canvas, svg { max-width: 100%; height: auto; }
 /* ===== Документы ===== */
 .documents-wrapper {
     display: flex;
-    gap: 40px;
+    gap: 30px;
     align-items: flex-start;
+    justify-content: center;
 }
 #documentBlocks {
     flex: 1 1 60%;
@@ -954,6 +1128,9 @@ img, video, iframe, canvas, svg { max-width: 100%; height: auto; }
     transition: all 0.3s ease;
     overflow-y: auto;
     max-height: calc(100vh - 150px);
+    overflow: hidden !important;
+    width: 100%;
+    height: 100%;
 }
 .doc-preview-content {
     width: 100%;
@@ -962,6 +1139,7 @@ img, video, iframe, canvas, svg { max-width: 100%; height: auto; }
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    overflow: hidden !important;
 }
 .doc-preview-content iframe,
 .doc-preview-content object {
@@ -970,6 +1148,9 @@ img, video, iframe, canvas, svg { max-width: 100%; height: auto; }
     min-height: 500px;
     border: none;
     border-radius: 12px;
+    overflow: hidden !important;
+    scrollbar-width: none; /* Для Firefox */
+    -ms-overflow-style: none; /* Для IE/Edge */
 }
 .doc-preview-content img {
     max-width: 100%;
@@ -977,14 +1158,78 @@ img, video, iframe, canvas, svg { max-width: 100%; height: auto; }
     object-fit: contain;
     border-radius: 12px;
 }
+.doc-preview-content iframe::-webkit-scrollbar,
+.doc-preview-content object::-webkit-scrollbar {
+    display: none; /* Для Chrome, Safari, Opera */
+}
 .doc-preview-placeholder {
     color: #999;
     font-size: 22px;
     text-align: center;
     padding: 20px;
 }
+/* ===== Фоллбэк предпросмотра документов ===== */
+.doc-preview-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+.doc-fallback-logo {
+    max-width: 80%;
+    max-height: 80%;
+    object-fit: contain;
+}
 @media (max-width: 768px) {
-    .documents-wrapper { flex-direction: column; gap: 20px; }
+    .crossbar-nav { display: none; }
+    .main-menu { width: 260px; left: -280px; }
+    .block { padding: 60px 0; }
+    .block-inner { text-align: center; }
+    .crossbar-inner { padding: 0 20px; }
+    .crossbar-title { font-size: 24px; }
+    .crossbar { padding: 8px 0 4px; }
+    .footer-inner { grid-template-columns: 1fr; gap: 10px; }
+    .footer-left, .footer-right { align-items: center; text-align: center; }
+    .footer-logo { flex-direction: column; }
+    .footer-logo img { width: 80px; height: 80px; }
+    .footer-logo span { font-size: 16px; }
+    .footer-col p, .footer a { font-size: 14px; }
+    .first-block { padding-top: 120px; }
+    h1 { font-size: 32px; }
+    .news-grid { grid-template-columns: 1fr; }
+    .direction-card { flex: 1 1 150px; min-height: 180px; }
+    #documentBlocks {
+        width: 100%;
+        max-width: 320px;        /* Фиксируем оптимальную ширину блока по центру */
+        margin: 0 auto;           /* Центрируем сам блок относительно экрана */
+        text-align: left;         /* Текст документов выравниваем по левому краю */
+        padding-left: 20px;       /* Отступ слева для текста ссылок */
+        box-sizing: border-box;
+    }
+    h2 {
+    font-size: 50px;
+    margin-bottom: 0px;
+    }
+    /* Заголовки категории (Достижения, Правила и т.д.) левее текста на 15px */
+    #documentBlocks h3 {
+        text-align: left;
+        margin-left: -15px;       /* Сдвигаем заголовки влево на 15px от текста */
+        margin-top: 20px;
+        margin-bottom: 10px;
+        font-size: 40px
+    }
+    .doc-item a {
+    font-size: 28px;
+    }
+    /* Элементы списка ссылок */
+    .doc-list {
+        text-align: left;
+    }
+    .doc-item {
+        text-align: left;
+    }
+    .documents-wrapper { flex-direction: column; align-items: center; }
     .doc-preview { display: none; }
 }
 
@@ -1274,10 +1519,36 @@ button.download-btn:hover,
     .footer-inner { max-width: 100%; padding: 0 20px; }
 }
 @media (max-width: 768px) {
+    /* Скрываем стрелки на мобильных устройствах */
+    .news-arrow {
+        display: none !important;
+    }
+    
+    /* Убираем отступы под скрытые стрелки */
+    .news-slider-container {
+        padding: 10px 0;
+    }
     .crossbar-nav { display: none; }
     .main-menu { width: 260px; left: -280px; }
     .block { padding: 60px 0; }
-    .block-inner { padding: 0 20px; }
+    
+    /* Текстовые блоки и списки: выравниваем блок по центру экрана, а текст — по левому краю */
+    .block-inner { 
+        text-align: left; /* Переопределяем с center на left для текста */
+        max-width: 90%;   /* Ограничиваем ширину блока, чтобы он встал по центру экрана */
+        margin-left: auto;
+        margin-right: auto;
+        box-sizing: border-box;
+        padding-left: 20px; /* Задаем отступ слева для основного текста */
+        padding-right: 20px;
+    }
+
+    /* Заголовки сдвигаем левее основного текста на 15px */
+    h1, h2, h3, h4, .block-title {
+        text-align: left;
+        margin-left: -15px; /* Сдвигает заголовок влево относительно текста */
+    }
+
     .crossbar-inner { padding: 0 20px; }
     .crossbar-title { font-size: 24px; }
     .crossbar { padding: 8px 0 4px; }
@@ -1288,6 +1559,7 @@ button.download-btn:hover,
     .footer-logo span { font-size: 16px; }
     .footer-col p, .footer a { font-size: 14px; }
     .first-block { padding-top: 120px; }
+    
     h1 { font-size: 32px; }
     .news-grid { grid-template-columns: 1fr; }
     .direction-card { flex: 1 1 150px; min-height: 180px; }

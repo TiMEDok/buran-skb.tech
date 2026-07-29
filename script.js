@@ -362,12 +362,12 @@
         }
     });
 
-    function initSliderLogic() {
+function initSliderLogic() {
         const track = document.getElementById('newsTrack');
         const prevBtn = document.getElementById('newsPrevBtn');
         const nextBtn = document.getElementById('newsNextBtn');
         const container = track ? track.parentElement : null;
-        if (!track || !prevBtn || !nextBtn || !container) return;
+        if (!track || !container) return;
 
         let currentIndex = 0;
 
@@ -383,20 +383,56 @@
             if (currentIndex < 0) currentIndex = 0;
             if (currentIndex > maxIndex) currentIndex = maxIndex;
             track.style.transform = `translate3d(-${currentIndex * cardWidth}px,0,0)`;
-            prevBtn.disabled = currentIndex === 0;
-            nextBtn.disabled = currentIndex >= maxIndex;
+            if (prevBtn) prevBtn.disabled = currentIndex === 0;
+            if (nextBtn) nextBtn.disabled = currentIndex >= maxIndex;
         }
 
-        prevBtn.onclick = () => {
-            if (currentIndex > 0) {
-                currentIndex--;
+        if (prevBtn) {
+            prevBtn.onclick = () => {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    updateSlider();
+                }
+            };
+        }
+        if (nextBtn) {
+            nextBtn.onclick = () => {
+                currentIndex++;
                 updateSlider();
+            };
+        }
+
+        // --- Поддержка Touch-свайпов для мобильных ---
+        let startX = 0;
+        let distX = 0;
+        let isSwiping = false;
+
+        container.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            distX = 0;
+            isSwiping = true;
+        }, { passive: true });
+
+        container.addEventListener('touchmove', (e) => {
+            if (!isSwiping) return;
+            distX = e.touches[0].clientX - startX;
+        }, { passive: true });
+
+        container.addEventListener('touchend', () => {
+            if (!isSwiping) return;
+            isSwiping = false;
+            const threshold = 40; // минимальное расстояние для свайпа в пикселях
+            if (distX < -threshold) {
+                currentIndex++;
+                updateSlider();
+            } else if (distX > threshold) {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    updateSlider();
+                }
             }
-        };
-        nextBtn.onclick = () => {
-            currentIndex++;
-            updateSlider();
-        };
+        });
+
         window.addEventListener('resize', updateSlider);
         updateSlider();
     }
@@ -416,15 +452,10 @@
             const wrapper = track.closest('.partners-wrapper') || track;
             wrapper.style.height = `${containerHeight}px`;
             track.innerHTML = '';
+            
             const activeCounts = {};
 
-            function spawnPartner() {
-                const availablePartners = partnerList.filter(p => (activeCounts[p.id] || 0) < 1);
-                if (availablePartners.length === 0) {
-                    setTimeout(spawnPartner, 500);
-                    return;
-                }
-                const partner = availablePartners[Math.floor(Math.random() * availablePartners.length)];
+            function spawnSinglePartner(partner) {
                 activeCounts[partner.id] = (activeCounts[partner.id] || 0) + 1;
                 const el = document.createElement('div');
                 el.className = 'partner-item active';
@@ -437,20 +468,32 @@
                 const maxTop = Math.max(minTop, containerHeight - partner.size - 10);
                 const randomTop = Math.floor(Math.random() * (maxTop - minTop + 1)) + minTop;
                 el.style.top = `${randomTop}px`;
-                const randomDuration = (Math.random() * 5 + 7).toFixed(1);
+                const randomDuration = (Math.random() * 4 + 9).toFixed(1); // Плавная скорость (9-13 сек)
                 el.style.animationDuration = `${randomDuration}s`;
+                
                 el.addEventListener('animationend', () => {
                     activeCounts[partner.id] = Math.max(0, (activeCounts[partner.id] || 1) - 1);
                     el.remove();
                 });
                 track.appendChild(el);
-                const minDelay = Math.max(600, 2200 - partnerList.length * 150);
-                const nextSpawnDelay = Math.random() * 800 + minDelay;
-                setTimeout(spawnPartner, nextSpawnDelay);
             }
 
-            spawnPartner();
-            setTimeout(spawnPartner, 1000);
+            // Поочередный непрерывный поток
+            let currentIndex = 0;
+            function scheduleNextSpawn() {
+                const partner = partnerList[currentIndex % partnerList.length];
+                currentIndex++;
+                
+                if ((activeCounts[partner.id] || 0) < 1) {
+                    spawnSinglePartner(partner);
+                }
+                
+                // Интервал между вылетами новых логотипов (1.5 - 2.5 секунды)
+                const delay = Math.random() * 1000 + 1500;
+                setTimeout(scheduleNextSpawn, delay);
+            }
+
+            scheduleNextSpawn();
         }
 
         function parsePartnerLines(lines) {
@@ -497,21 +540,45 @@
         return projects.sort((a, b) => {
             const dateA = a['Дата начала'] ? new Date(a['Дата начала']) : new Date(0);
             const dateB = b['Дата начала'] ? new Date(b['Дата начала']) : new Date(0);
-            return dateB - dateA; // Свежие проекты первыми
+            return dateB - dateA;
         });
     }
 
-    async function loadProjects() {
-        const hotContainer = document.getElementById('projectsHot');
-        const gridContainer = document.getElementById('projectsGrid');
-        if (!hotContainer && !gridContainer) return;
+    // Вспомогательная функция для проверки наличия валидного названия и описания
+    function isValidProject(p) {
+        const title = (p.Название || '').trim();
+        const desc = (p.Описание || p['Полное описание'] || '').trim();
+        return title.length > 0 && desc.length > 0;
+    }
 
+    // Константа с путем к заглушке по умолчанию (измените путь здесь на любой другой при необходимости)
+const DEFAULT_PLACEHOLDER = 'logo/skbbyranlogocomp.png';
+
+async function loadProjects() {
+    const hotContainer = document.getElementById('projectsHot');
+    const gridContainer = document.getElementById('projectsGrid');
+    if (!hotContainer && !gridContainer) return;
+
+    function isValidProject(p) {
+        const title = (p.Название || '').trim();
+        const desc = (p.Описание || p['Полное описание'] || '').trim();
+        return title.length > 0 && desc.length > 0;
+    }
+
+    function sortProjectsByDate(projects) {
+        return projects.sort((a, b) => {
+            const dateA = a['Дата начала'] ? new Date(a['Дата начала']) : new Date(0);
+            const dateB = b['Дата начала'] ? new Date(b['Дата начала']) : new Date(0);
+            return dateB - dateA;
+        });
+    }
         if (isLocal()) {
             let demoProjects = [
                 { Название: 'Робот-манипулятор', Описание: 'Разработка промышленного робота', 'Полное описание': 'Подробное описание проекта...', Пометки: 'Открытый, Грантовый', Ссылки: 'https://github.com', Фото: 'project_robot.jpg', Сжатое: 'project_robot_comp.jpg', 'Дата начала': '2026-01-01', 'Дата закрытия': '2026-06-01' },
                 { Название: 'Спутник-кубсат', Описание: 'Создание малого космического аппарата', 'Полное описание': 'Проект по разработке спутника формата 3U.', Пометки: 'Открытая разработка', Ссылки: 'https://space.ru', Фото: 'sat.jpg', Сжатое: 'sat_comp.jpg', 'Дата начала': '2025-09-01' }
             ];
             
+            demoProjects = demoProjects.filter(isValidProject);
             demoProjects = sortProjectsByDate(demoProjects);
             const openProjects = demoProjects.filter(p => p.Пометки && p.Пометки.includes('Открытый'));
 
@@ -554,81 +621,101 @@
             return;
         }
 
-        try {
-            const resp = await fetch('project.txt');
-            if (!resp.ok) throw new Error('project.txt not found');
-            const text = await resp.text();
-            const blocks = text.split(/\n\s*\n/).filter(b => b.trim());
-            let projects = blocks.map(block => {
-                const lines = block.split('\n');
-                const obj = {};
-                lines.forEach(line => {
-                    const sep = line.indexOf(':');
-                    if (sep > 0) {
-                        const key = line.slice(0, sep).trim();
-                        const val = line.slice(sep+1).trim();
-                        obj[key] = val;
+    try {
+        const resp = await fetch('project.txt');
+        if (!resp.ok) throw new Error('project.txt not found');
+        const text = await resp.text();
+        const blocks = text.split(/\n\s*\n/).filter(b => b.trim());
+        let projects = blocks.map(block => {
+            const lines = block.split('\n');
+            const obj = {};
+            lines.forEach(line => {
+                const sep = line.indexOf(':');
+                if (sep > 0) {
+                    const key = line.slice(0, sep).trim();
+                    const val = line.slice(sep + 1).trim();
+                    obj[key] = val;
+                }
+            });
+            return obj;
+        });
+
+        projects = projects.filter(isValidProject);
+        projects = sortProjectsByDate(projects);
+
+        const openProjects = projects.filter(p => p.Пометки && p.Пометки.includes('Открытый'));
+        const allProjects = projects;
+
+        function renderProjectCard(p, isHot = false) {
+                    const tags = (p.Пометки || '').split(',').map(s => s.trim()).filter(Boolean);
+                    const tagMapping = {
+                        'Открытый': 'tag-open',
+                        'Завершенный': 'tag-closed',
+                        'Грантовый': 'tag-grant',
+                        'Открытая разработка': 'tag-dev',
+                        'Коллаборация': 'tag-joint',
+                        'Спонсируется': 'tag-support'
+                    };
+                    const tagHtml = tags
+                        .filter(t => tagMapping[t])
+                        .map(t => `<span class="tag ${tagMapping[t]}">${t}</span>`)
+                        .join('');
+
+                    // Проверка фото: очищаем от значений типа '?' или пустых строк
+                    let compressedPhoto = (p.Сжатое && p.Сжатое.trim() !== '?') ? p.Сжатое.trim() : '';
+                    let fullPhoto = (p.Фото && p.Фото.trim() !== '?') ? p.Фото.trim() : '';
+
+                    let imgSrc = compressedPhoto ? `img/${compressedPhoto}` : (fullPhoto ? `img/${fullPhoto}` : '');
+                    let imgOrig = fullPhoto ? `img/${fullPhoto}` : imgSrc;
+                    let isPlaceholder = false;
+
+                    // Если фото отсутствуют — используем дефолтную заглушку
+                    if (!imgSrc) {
+                        imgSrc = DEFAULT_PLACEHOLDER;
+                        imgOrig = DEFAULT_PLACEHOLDER;
+                        isPlaceholder = true;
                     }
-                });
-                return obj;
-            });
 
-            // Сортировка проектов по дате начала (свежие сверху)
-            projects = sortProjectsByDate(projects);
+                    const fullDesc = p['Полное описание'] || p.Описание || '';
+                    const shortDesc = p.Описание ? p.Описание.slice(0, 100) + (p.Описание.length > 100 ? '...' : '') : '';
 
-            const openProjects = projects.filter(p => p.Пометки && p.Пометки.includes('Открытый'));
-            const allProjects = projects;
-
-            function renderProjectCard(p, isHot = false) {
-                const tags = (p.Пометки || '').split(',').map(s => s.trim()).filter(Boolean);
-                const tagMapping = {
-                    'Открытый': 'tag-open',
-                    'Завершенный': 'tag-closed',
-                    'Грантовый': 'tag-grant',
-                    'Открытая разработка': 'tag-dev',
-                    'Коллаборация': 'tag-joint',
-                    'Спонсируется': 'tag-support'
-                };
-                const tagHtml = tags
-                    .filter(t => tagMapping[t])
-                    .map(t => `<span class="tag ${tagMapping[t]}">${t}</span>`)
-                    .join('');
-                const imgSrc = p.Сжатое ? `img/${p.Сжатое}` : '';
-                const imgOrig = p.Фото ? `img/${p.Фото}` : '';
-                const fullDesc = p['Полное описание'] || p.Описание || '';
-                const shortDesc = p.Описание ? p.Описание.slice(0, 100) + (p.Описание.length > 100 ? '...' : '') : '';
-                return `
-                    <div class="project-card" data-full='${encodeURIComponent(JSON.stringify(p))}'>
-                        ${imgSrc ? `<img src="${imgSrc}" data-src="${imgOrig}" class="lazy-img" alt="${p.Название || ''}" loading="lazy">` : ''}
-                        <div class="project-body">
-                            <h3>${p.Название || 'Проект'}</h3>
-                            <p class="project-desc">${isHot ? fullDesc : shortDesc}</p>
-                            <div class="project-tags">${tagHtml}</div>
+                    return `
+                        <div class="project-card" data-full='${encodeURIComponent(JSON.stringify(p))}'>
+                            <img src="${imgSrc}" 
+                                data-src="${imgOrig}" 
+                                class="lazy-img ${isPlaceholder ? 'placeholder-img' : ''}" 
+                                alt="${p.Название || ''}" 
+                                loading="lazy" 
+                                onerror="this.onerror=null; this.src='${DEFAULT_PLACEHOLDER}'; this.classList.add('placeholder-img');">
+                            <div class="project-body">
+                                <h3>${p.Название || 'Проект'}</h3>
+                                <p class="project-desc">${isHot ? fullDesc : shortDesc}</p>
+                                <div class="project-tags">${tagHtml}</div>
+                            </div>
                         </div>
-                    </div>
-                `;
-            }
+                    `;
+                }
 
-            if (hotContainer) {
-                hotContainer.innerHTML = openProjects.length ? openProjects.map(p => renderProjectCard(p, true)).join('') : '<p>Нет открытых проектов.</p>';
-            }
-            if (gridContainer) {
-                gridContainer.innerHTML = allProjects.length ? allProjects.map(p => renderProjectCard(p, false)).join('') : '<p>Проекты отсутствуют.</p>';
-            }
+                if (hotContainer) {
+                    hotContainer.innerHTML = openProjects.length ? openProjects.map(p => renderProjectCard(p, true)).join('') : '<p>Нет открытых проектов.</p>';
+                }
+                if (gridContainer) {
+                    gridContainer.innerHTML = allProjects.length ? allProjects.map(p => renderProjectCard(p, false)).join('') : '<p>Проекты отсутствуют.</p>';
+                }
 
-            document.querySelectorAll('.project-card').forEach(card => {
-                card.addEventListener('click', function() {
-                    const data = JSON.parse(decodeURIComponent(this.dataset.full));
-                    openProjectModal(data);
+                document.querySelectorAll('.project-card').forEach(card => {
+                    card.addEventListener('click', function() {
+                        const data = JSON.parse(decodeURIComponent(this.dataset.full));
+                        openProjectModal(data);
+                    });
                 });
-            });
-            lazyLoadImages();
-        } catch (e) {
-            console.warn('Ошибка загрузки проектов:', e);
-            if (hotContainer) hotContainer.innerHTML = '<p>Не удалось загрузить проекты.</p>';
-            if (gridContainer) gridContainer.innerHTML = '<p>Не удалось загрузить проекты.</p>';
+                if (typeof lazyLoadImages === 'function') lazyLoadImages();
+            } catch (e) {
+                console.warn('Ошибка загрузки проектов:', e);
+                if (hotContainer) hotContainer.innerHTML = '<p>Не удалось загрузить проекты.</p>';
+                if (gridContainer) gridContainer.innerHTML = '<p>Не удалось загрузить проекты.</p>';
+            }
         }
-    }
 
     function openProjectModal(data) {
         let overlay = document.getElementById('projectModalOverlay');
@@ -638,6 +725,7 @@
             overlay.className = 'news-modal-overlay';
             document.body.appendChild(overlay);
         }
+
         const tags = (data.Пометки || '').split(',').map(s => s.trim()).filter(Boolean);
         const tagMapping = {
             'Открытый': 'tag-open',
@@ -651,12 +739,33 @@
             .filter(t => tagMapping[t])
             .map(t => `<span class="tag ${tagMapping[t]}">${t}</span>`)
             .join('');
-        const imgSrc = data.Фото ? `img/${data.Фото}` : '';
-        const imgComp = data.Сжатое ? `img/${data.Сжатое}` : '';
+
+        // --- Логика выбора изображения или заглушки ---
+        const rawPhoto = (data.Фото && data.Фото.trim() !== '?') ? data.Фото.trim() : '';
+        const rawComp = (data.Сжатое && data.Сжатое.trim() !== '?') ? data.Сжатое.trim() : '';
+
+        let imgSrc = rawPhoto ? `img/${rawPhoto}` : '';
+        let imgComp = rawComp ? `img/${rawComp}` : (imgSrc || '');
+        let isPlaceholder = false;
+
+        // Если ни сжатого, ни оригинального фото нет или стоит '?'
+        if (!imgComp) {
+            imgComp = DEFAULT_PLACEHOLDER;
+            imgSrc = DEFAULT_PLACEHOLDER;
+            isPlaceholder = true;
+        }
+
         overlay.innerHTML = `
             <div class="news-modal">
                 <button class="news-modal-close" onclick="window.closeProjectModal()" aria-label="Закрыть">&times;</button>
-                ${imgSrc ? `<div class="news-modal-img-wrapper"><img src="${imgComp}" data-src="${imgSrc}" class="lazy-img" alt="${data.Название}" loading="lazy"></div>` : ''}
+                <div class="news-modal-img-wrapper">
+                    <img src="${imgComp}" 
+                        data-src="${imgSrc}" 
+                        class="lazy-img ${isPlaceholder ? 'placeholder-img' : ''}" 
+                        alt="${data.Название || ''}" 
+                        loading="lazy" 
+                        onerror="this.onerror=null; this.src='${DEFAULT_PLACEHOLDER}'; this.classList.add('placeholder-img');">
+                </div>
                 <h2>${data.Название || 'Проект'}</h2>
                 <div class="project-tags" style="margin: 12px 0;">${tagHtml}</div>
                 <div class="news-modal-text">${data['Полное описание'] || data.Описание || ''}</div>
@@ -665,6 +774,7 @@
                 ${data.Ссылки ? `<p><strong>Ссылки:</strong> ${data.Ссылки.split(',').map(s => `<a href="${s.trim()}" target="_blank">${s.trim()}</a>`).join(' ')}</p>` : ''}
             </div>
         `;
+
         overlay.classList.add('active');
         document.body.style.overflow = 'hidden';
         overlay.onclick = function(e) {
@@ -850,14 +960,27 @@
 
                 photos.forEach(photo => {
                     const sizes = photo.sizes || [];
-                    const best = sizes.reduce((a, b) => (a.width > b.width ? a : b), sizes[0]);
-                    if (!best) return;
+                    if (!sizes.length) return;
+
+                    // 1. Находим изображение низкого качества (превью для плитки галереи)
+                    // Маленькие размеры в VK API: 'm', 's', 'p', 'q', или берем первый элемент
+                    const lowQuality = sizes.find(s => s.type === 'm' || s.type === 's') || sizes[0];
+
+                    // 2. Находим изображение высокого качества (для модального окна и скачивания)
+                    // Самые высокие разрешения в VK: 'w', 'z', 'y', 'x' или максимальное по ширине
+                    const highQuality = sizes.find(s => s.type === 'w' || s.type === 'z' || s.type === 'y') 
+                                        || sizes.reduce((a, b) => (a.width > b.width ? a : b), sizes[0]);
+
                     const item = document.createElement('div');
                     item.className = 'photo-item';
+                    
+                    // Создаем <img>, который загружает превью низкого качества
                     const img = document.createElement('img');
-                    img.src = best.url;
+                    img.src = lowQuality.url;
                     img.alt = title;
                     img.loading = 'lazy';
+                    // Сохраняем ссылку высокого качества в dataset
+                    img.dataset.full = highQuality.url;
                     item.appendChild(img);
 
                     const btn = document.createElement('button');
@@ -865,10 +988,13 @@
                     btn.textContent = '⬇ Скачать';
                     btn.addEventListener('click', function(e) {
                         e.stopPropagation();
-                        window.downloadPhoto(best.url);
+                        // Скачиваем фото ВЫСОКОГО качества
+                        window.downloadPhoto(highQuality.url);
                     });
                     item.appendChild(btn);
-                    item.addEventListener('click', () => window.openPhotoModal(best.url));
+
+                    // При клике открываем модалку с оригиналом ВЫСОКОГО качества
+                    item.addEventListener('click', () => window.openPhotoModal(highQuality.url));
                     grid.appendChild(item);
                 });
 
@@ -1081,15 +1207,46 @@
         }
     }
 
+    // Функция для генерации HTML-кода стандартного логотипа (фоллбэка)
+    function getFallbackLogoHtml() {
+        return `
+            <div class="doc-preview-fallback">
+                <img src="logo/skbbyranlogocomp.png" 
+                    onerror="this.src='logo/skbbyranlogo.svg'" 
+                    alt="СКБ Буран" 
+                    class="doc-fallback-logo">
+            </div>
+        `;
+    }
+
+    // Показывает фоллбэк с логотипом в окне предпросмотра при ошибке или отсутствии файла
+    window.handleDocPreviewError = function(fileName, errorDetails) {
+        console.error(`[Ошибка загрузки документа] Не удалось загрузить файл "${fileName}":`, errorDetails);
+        const previewBlock = document.getElementById('docPreview');
+        if (!previewBlock) return;
+        const content = previewBlock.querySelector('.doc-preview-content');
+        if (content) {
+            content.innerHTML = getFallbackLogoHtml();
+        }
+    };
+
     function initDocPreview() {
         const previewBlock = document.getElementById('docPreview');
         if (!previewBlock) return;
         const content = previewBlock.querySelector('.doc-preview-content');
         const items = document.querySelectorAll('.doc-item a[data-preview]');
+
+        // Устанавливаем логотип по умолчанию при инициализации, если блок пуст
+        if (!content.innerHTML.trim()) {
+            content.innerHTML = getFallbackLogoHtml();
+        }
+
         items.forEach(link => {
             link.addEventListener('mouseenter', function() {
                 const fileName = this.dataset.preview;
-                content.innerHTML = getPreviewHtml(fileName);
+                if (fileName) {
+                    content.innerHTML = getPreviewHtml(fileName);
+                }
             });
         });
     }
@@ -1097,12 +1254,31 @@
     function getPreviewHtml(fileName) {
         const ext = fileName.split('.').pop().toLowerCase();
         const filePath = `document/${fileName}`;
+        const encodedFileName = encodeURIComponent(fileName);
+
         if (ext === 'pdf') {
-            return `<object data="${filePath}#zoom=90&toolbar=0&navpanes=0&scrollbar=0" type="application/pdf" style="width:100%; height:100%; min-height:500px;"><p>Не удалось загрузить PDF</p></object>`;
+            return `
+                <object data="${filePath}#zoom=90&toolbar=0&navpanes=0&scrollbar=0" 
+                        type="application/pdf" 
+                        style="width:100%; height:100%; overflow:hidden;"
+                        onerror="window.handleDocPreviewError('${encodedFileName}', 'Файл отсутствует или не является корректным PDF')">
+                    <iframe src="${filePath}" 
+                            style="width:100%; height:100%; border:none; overflow:hidden;"
+                            onerror="window.handleDocPreviewError('${encodedFileName}', 'Не удалось отобразить PDF в iframe')">
+                    </iframe>
+                </object>
+            `;
         } else if (['jpg', 'jpeg', 'png', 'gif', 'svg', 'bmp', 'webp'].includes(ext)) {
-            return `<img src="${filePath}" alt="Превью" style="max-width:100%; max-height:100%; object-fit:contain;">`;
+            return `
+                <img src="${filePath}" 
+                    alt="Превью" 
+                    style="max-width:100%; max-height:100%; object-fit:contain;"
+                    onerror="window.handleDocPreviewError('${encodedFileName}', 'Изображение не найдено или повреждено')">
+            `;
         } else {
-            return `<div class="preview-placeholder" style="text-align:center; padding:20px;"><span style="font-size: 48px;">📄</span><br><span>Предпросмотр недоступен</span></div>`;
+            // Для всех остальных форматов (.doc, .docx, .rar, .zip и т.д.) сразу возвращаем логотип
+            console.warn(`[Предпросмотр недоступен] Формат .${ext} файла "${fileName}" не поддерживается браузером напрямую. Показываем логотип.`);
+            return getFallbackLogoHtml();
         }
     }
 

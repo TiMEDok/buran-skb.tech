@@ -1,27 +1,50 @@
-/
-├── home.html                 # Главная страница
-├── project.html              # Страница проектов
-├── photogallery.html         # Страница фотогалереи
-├── document.html             # Страница документов
-├── style.css                 # Общие стили
-├── script.js                 # Вся логика (меню, кросс-бар, ленивая загрузка, API VK, партнёры, проекты, события, документы)
-├── logo/
-│   ├── skbbyranlogocomp.png  # сжатый логотип СКБ
-│   ├── skbbyranlogo.svg      # векторный логотип СКБ
-│   ├── vlsulogocomp.png      # сжатый логотип ВлГУ
-│   ├── vlsulogo.svg          # векторный логотип ВлГУ
-│   └── sp*.{png,svg,jpg}     # логотипы партнёров (оригиналы) и spcomp* (сжатые)
-├── img/
-│   ├── herocomp.jpg          # сжатое фото для блока «Цель»
-│   ├── hero.jpg              # оригинал
-│   ├── historycomp.jpg       # сжатое фото для «Истории»
-│   └── history.jpg           # оригинал
-├── document/
-│   ├── achiv_01_грамота.pdf  # пример документа
-│   ├── rules_02_положение.docx
-│   └── ...                   # другие документы с префиксами
-├── sponsor.txt               # список партнёров
-├── project.txt               # описание проектов
-└── event.txt                 # описание мероприятий для фотогалереи
+buran-skb.tech(Public)/
+├── document/                     # Документы и чертежи (PDF)
+│   ├── achiv_01_грамота.pdf
+│   └── draw_02_1чертеж.pdf
+├── fonts/                        # Шрифты сайта
+│   └── WDXLubrifontSC.woff2
+├── img/                          # Изображения проектов и событий
+│   ├── historyburan.png
+│   ├── historyburancomp.png
+│   ├── rocket01.jpg
+│   ├── rocket01_cmp.jpg
+│   ├── RocketPHA.jpg
+│   ├── RocketPHA_cmp.jpg
+│   ├── SRM.jpg
+│   └── SRM_cmp.jpg
+├── logo/                         # Логотипы партнеров и СКБ
+│   ├── apelsin.png
+│   ├── apelsin_cmp.png
+│   ├── iite.png
+│   ├── iite_cmp.png
+│   ├── kvantorium33.png
+│   ├── kvantorium33_cmp.png
+│   ├── may.png
+│   ├── may_cmp.png
+│   ├── rtrs.png
+│   ├── rtrs_cmp.png
+│   ├── skbbyranlogo.ico
+│   ├── skbbyranlogo.svg
+│   ├── skbbyranlogocomp.png
+│   ├── sporadic.png
+│   ├── sporadic_cmp.png
+│   ├── vish.svg
+│   ├── vish_cmp.svg
+│   ├── vlsulogo.svg
+│   └── vlsulogocomp.png
+├── document.html                 # Страница с документами
+├── document.txt                  # Данные для страницы документов
+├── event.txt                     # Данные о мероприятиях / событиях
+├── index.html                    # Главная страница сайта
+├── photogallery.html             # Страница фотогалереи
+├── project.html                  # Страница проектов
+├── project.txt                   # Данные о проектах
+├── robots.txt                    # Файл инструкций для поисковых роботов
+├── script.js                     # Основной скрипт логики сайта
+├── sitemap.xml                   # Карта сайта для индексации
+├── sponsor.txt                   # Данные о спонсорах / партнерах
+├── stat.txt                      # Структура сайта
+└── style.css                     # Основной файл стилей (CSS)
 
 Пометки: Открытый, Грантовый, Открытая разработка, Спонсируется, Завершенный, Коллаборация
