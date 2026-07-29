@@ -622,13 +622,13 @@ p, li, .text { font-size: 24px; margin-bottom: 1.5em; }
 
 .step-num {
     display: block;
-    font-size: 26px;
+    font-size: 42px;
     font-weight: bold;
     margin-bottom: 4px;
 }
 
 .flow-step p {
-    font-size: 14px;
+    font-size: 24px;
     line-height: 1.3;
     margin: 0;
 }
@@ -660,7 +660,7 @@ p, li, .text { font-size: 24px; margin-bottom: 1.5em; }
     }
 
     .step-num {
-        font-size: 24px;
+        font-size: 42px;
     }
 
     .flow-step p {
