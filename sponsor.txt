@@ -5,7 +5,7 @@ vish.svg, vish_cmp.svg, 180, https://aesa.tech/
 rtrs.png, rtrs_cmp.png, 80, https://rtrs.vlsu.ru/
 sporadic.png, sporadic_cmp.png, 130, https://sporadic.ru/
 kvantorium330.png, kvantorium33_cmp.png, 100, https://kvantorium33.ru/
-iite.png, iite_cmp.png, 125, https://iite.vlsu.ru/
+iite.png, iite_cmp.png, 115, https://iite.vlsu.ru/
 granit.png, granit_cmp.png, 80, https://granit-concern.ru/
 NrFr.svg, NrFr_cmp.svg, 60, https://onf.ru/
 LGU, LGU_cmp.png, 120, https://daluniver.ru/
