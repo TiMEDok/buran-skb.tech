@@ -126,29 +126,38 @@
     animateBlocks.forEach(block => io.observe(block));
 
     // ---------- Копирование email ----------
-    document.addEventListener('DOMContentLoaded', function() {
-        const emailLink = document.getElementById('copyEmail');
-        if (emailLink) {
-            emailLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                const email = 'aero@buran-skb.tech';
-                const showSuccess = () => {
-                    const originalText = emailLink.textContent;
-                    emailLink.textContent = 'Скопировано! ✓';
-                    emailLink.style.color = '#4CAF50';
+    document.addEventListener('DOMContentLoaded', () => {
+        // Находим обе ссылки на email
+        const emailLinks = [
+            document.getElementById('copyEmailBuran'),
+            document.getElementById('copyEmailRtrs')
+        ];
+
+        emailLinks.forEach(link => {
+            if (!link) return;
+
+            link.addEventListener('click', (e) => {
+                e.preventDefault(); // Отменяем переход по ссылке '#'
+                
+                const emailText = link.innerText.trim();
+
+                navigator.clipboard.writeText(emailText).then(() => {
+                    const originalText = link.innerText;
+
+                    // Изменяем текст и добавляем зеленый цвет
+                    link.innerText = 'Скопировано! ✓';
+                    link.classList.add('email-copied');
+                    
+                    // Возвращаем все в исходный вид через 2 секунды
                     setTimeout(() => {
-                        emailLink.textContent = originalText;
-                        emailLink.style.color = '';
+                        link.innerText = originalText;
+                        link.classList.remove('email-copied');
                     }, 2000);
-                };
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(email).then(showSuccess)
-                        .catch(() => fallbackCopy(email, showSuccess));
-                } else {
-                    fallbackCopy(email, showSuccess);
-                }
+                }).catch(err => {
+                    console.error('Ошибка копирования: ', err);
+                });
             });
-        }
+        });
     });
 
     function fallbackCopy(text, onSuccess) {
@@ -964,7 +973,7 @@ async function loadProjects() {
 
                     // 1. Находим изображение низкого качества (превью для плитки галереи)
                     // Маленькие размеры в VK API: 'm', 's', 'p', 'q', или берем первый элемент
-                    const lowQuality = sizes.find(s => s.type === 'm' || s.type === 's') || sizes[0];
+                    const lowQuality = sizes.find(s => s.type === 'x' || s.type === 'z') || sizes[0];
 
                     // 2. Находим изображение высокого качества (для модального окна и скачивания)
                     // Самые высокие разрешения в VK: 'w', 'z', 'y', 'x' или максимальное по ширине

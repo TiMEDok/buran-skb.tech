@@ -1633,3 +1633,8 @@ button.download-btn:hover,
     text-shadow: 0 2px 8px rgba(0,0,0,0.5);
     pointer-events: none;
 }
+/* Класс для успешного копирования email */
+.email-copied {
+    color: #4CAF50 !important; /* Зеленый цвет */
+    transition: color 0.3s ease;
+}
