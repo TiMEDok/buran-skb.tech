@@ -42,7 +42,10 @@ a:hover { color: #ff6700; }
 h1, h2, h3 { font-weight: 400; }
 h1 { font-size: 46px; margin-bottom: 26px; }
 h2 { font-size: 42px; margin-bottom: 50px; color: var(--blue); }
-h3 { font-size: 32px; }
+h3 { font-size: 32px;   
+    overflow-wrap: break-word;
+    hyphens: auto;
+   }
 p, li, .text { font-size: 24px; margin-bottom: 1.5em; }
 .caption { font-size: 36px; }
 
@@ -281,7 +284,7 @@ p, li, .text { font-size: 24px; margin-bottom: 1.5em; }
 .hero-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 60px;
+    gap: 0px;
     align-items: center;
 }
 .hero-text p { font-size: 26px; }
@@ -1210,6 +1213,7 @@ img, video, iframe, canvas, svg { max-width: 100%; height: auto; }
     h2 {
     font-size: 50px;
     margin-bottom: 0px;
+    line-height: 110%;
     }
     /* Заголовки категории (Достижения, Правила и т.д.) левее текста на 15px */
     #documentBlocks h3 {
@@ -1534,7 +1538,7 @@ button.download-btn:hover,
     
     /* Текстовые блоки и списки: выравниваем блок по центру экрана, а текст — по левому краю */
     .block-inner { 
-        text-align: left; /* Переопределяем с center на left для текста */
+        text-align: center; /* Переопределяем с center на left для текста */
         max-width: 90%;   /* Ограничиваем ширину блока, чтобы он встал по центру экрана */
         margin-left: auto;
         margin-right: auto;
@@ -1544,7 +1548,10 @@ button.download-btn:hover,
     }
 
     /* Заголовки сдвигаем левее основного текста на 15px */
-    h1, h2, h3, h4, .block-title {
+    h2, h3, h4, .block-title {
+        text-align: center;
+    }
+    h1 .block-title {
         text-align: left;
         margin-left: -15px; /* Сдвигает заголовок влево относительно текста */
     }
